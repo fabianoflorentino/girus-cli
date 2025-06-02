@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/badtuxx/girus-cli/content"
 	"github.com/badtuxx/girus-cli/internal/common"
 	"github.com/badtuxx/girus-cli/internal/helpers"
 	"github.com/badtuxx/girus-cli/internal/k8s"
@@ -33,18 +34,17 @@ var (
 )
 
 var createCmd = &cobra.Command{
-	Use:   "create [subcommand]",
-	Short: "Comandos para criar recursos",
+	Use:   content.CreateCmdUse,
+	Short: content.CreateCmdShort,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
 }
 
 var createClusterCmd = &cobra.Command{
-	Use:   "cluster",
-	Short: "Cria o cluster Girus",
-	Long: `Cria um cluster Kind com o nome "girus" e implanta todos os componentes necessários.
-Por padrão, o deployment embutido no binário é utilizado.`,
+	Use:   content.CreateClusterCmdUse,
+	Short: content.CreateClusterCmdShort,
+	Long:  content.CreateClusterCmdLong,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Criar formatadores de cores
 		green := color.New(color.FgGreen).SprintFunc()
@@ -53,15 +53,8 @@ Por padrão, o deployment embutido no binário é utilizado.`,
 		cyan := color.New(color.FgCyan).SprintFunc()
 		bold := color.New(color.Bold).SprintFunc()
 		magenta := color.New(color.FgMagenta).SprintFunc()
-		headerColor := color.New(color.FgCyan, color.Bold).SprintFunc()
 
-		// Exibir cabeçalho
-		fmt.Println(strings.Repeat("─", 80))
-		fmt.Println(headerColor("GIRUS CREATE"))
-		fmt.Println(strings.Repeat("─", 80))
-
-		// Verificar se há atualização disponível para o CLI
-		fmt.Println(headerColor("Verificando atualizações..."))
+		fmt.Print(content.CreateHeader())
 
 		currentVersion := common.Version
 
@@ -101,53 +94,19 @@ Por padrão, o deployment embutido no binário é utilizado.`,
 
 			// Detectar o sistema operacional para instruções específicas
 			if runtime.GOOS == "darwin" && containerEngine == "docker" {
-				// macOS docker
-				fmt.Println("\nPara macOS, recomendamos usar Colima (alternativa leve ao Docker Desktop):")
-				fmt.Println("1. Instale o Homebrew caso não tenha:")
-				fmt.Println("   /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")
-				fmt.Println("2. Instale o Colima e o Docker CLI:")
-				fmt.Println("   brew install colima docker")
-				fmt.Println("3. Inicie o Colima:")
-				fmt.Println("   colima start")
-				fmt.Println("\nAlternativamente, você pode instalar o Docker Desktop para macOS de:")
-				fmt.Println("https://www.docker.com/products/docker-desktop")
+				fmt.Printf(content.DockerMacOSinstructions)
 			} else if runtime.GOOS == "linux" && containerEngine == "docker" {
-				// Linux docker
-				fmt.Println("\nPara Linux, use o script de instalação oficial:")
-				fmt.Println("   curl -fsSL https://get.docker.com | bash")
-				fmt.Println("\nApós a instalação, adicione seu usuário ao grupo docker para evitar usar sudo:")
-				fmt.Println("   sudo usermod -aG docker $USER")
-				fmt.Println("   newgrp docker")
-				fmt.Println("\nE inicie o serviço:")
-				fmt.Println("   sudo systemctl enable docker")
-				fmt.Println("   sudo systemctl start docker")
+				fmt.Printf(content.DockerLinuxInstructions)
 			}
 			if runtime.GOOS == "darwin" && containerEngine == "podman" {
-				// macOS podman
-				fmt.Println("\nPara macOS, recomendamos Podman:")
-				fmt.Println("1. Instale o Homebrew caso não tenha:")
-				fmt.Println("   /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")
-				fmt.Println("2. Instale o Podman")
-				fmt.Println("   brew install podman")
-				fmt.Println("3. Inicie o Podman:")
-				fmt.Println("   podman machine init")
-				fmt.Println("   podman machine start")
+				fmt.Printf(content.PodmanMacOSInstructions)
 			} else if runtime.GOOS == "linux" && containerEngine == "podman" {
-				// Linux podman
-				fmt.Println("\nPara Linux, use o script de instalação oficial:")
-				fmt.Println("   curl -fsSL https://get.docker.com | bash")
-				fmt.Println("\nE inicie o serviço:")
-				fmt.Println("   sudo systemctl enable podman")
-				fmt.Println("   sudo systemctl start podman")
-				fmt.Println("\nOpicional: Após a instalação, para utilizar podman, rootless evitando sudo:")
-				fmt.Println("   Siga as instruções do site oficial:")
-				fmt.Println("   https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md")
+				fmt.Printf(content.PodmanLinuxInstructions)
 			} else if containerEngine == "podman" {
-				// Windows ou outros sistemas
-				fmt.Println("\nVisite https://github.com/containers/podman/blob/main/docs/tutorials/podman-for-windows.md para instruções de instalação para seu sistema operacional")
+				fmt.Printf(content.PodmanWindowsInstructions)
 			} else {
 				// Windows ou outros sistemas
-				fmt.Println("\nVisite https://www.docker.com/products/docker-desktop para instruções de instalação para seu sistema operacional")
+				fmt.Printf(content.OtherOSInstructions)
 			}
 
 			fmt.Println("\nApós instalar o " + containerEngine + " execute novamente este comando.")
@@ -160,19 +119,13 @@ Por padrão, o deployment embutido no binário é utilizado.`,
 			fmt.Printf("%s O serviço %s não está em execução\n", red("ERRO:"), containerEngine)
 
 			if runtime.GOOS == "darwin" && containerEngine == "docker" {
-				fmt.Println("\nPara macOS com Colima:")
-				fmt.Println("   colima start")
-				fmt.Println("\nPara Docker Desktop:")
-				fmt.Println("   Inicie o aplicativo Docker Desktop")
+				fmt.Printf(content.DockerInfoDarwin)
 			} else if runtime.GOOS == "darwin" && containerEngine == "podman" {
-				fmt.Println("\nPara Podman:")
-				fmt.Println("   Inicie a machine com: podman machine start")
+				fmt.Printf(content.PodmanInfoDarwin)
 			} else if runtime.GOOS == "linux" && containerEngine == "docker" {
-				fmt.Println("\nInicie o serviço Docker:")
-				fmt.Println("   sudo systemctl start docker")
+				fmt.Printf(content.DockerInfoLinux)
 			} else if runtime.GOOS == "linux" && containerEngine == "podman" {
-				fmt.Println("\nInicie o serviço Podman:")
-				fmt.Println("   sudo systemctl start podman")
+				fmt.Printf(content.PodmanInfoLinux)
 			} else {
 				fmt.Println("\nInicie o serviço de containers apropriado para seu sistema.")
 			}
