@@ -45,3 +45,4 @@ coverage.out
 # Logs de testes
 testdata/
 
+.vscode/
