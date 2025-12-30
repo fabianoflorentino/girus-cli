@@ -4,7 +4,7 @@
 
 # GIRUS: Plataforma de Laboratórios Interativos
 
-Versão 0.3.0 Codename: "Maracatu" - Maio de 2025
+Versão 0.4.0 Codename: "Maracatu" - Maio de 2025
 
 ## Visão Geral
 
@@ -26,6 +26,13 @@ Desenvolvida pela LINUXtips, a plataforma GIRUS se diferencia por ser executada 
 ## Gerenciamento de Repositórios e Laboratórios
 
 O GIRUS implementa um sistema robusto de gerenciamento de repositórios e laboratórios, similar ao Helm para Kubernetes. Este sistema permite:
+
+### Instalação
+```bash
+curl -sSL girus.linuxtips.io | bash
+```
+
+Você precisa ter o Docker instalado em seu computador para poder instalar o Girus.
 
 ### Atualização da CLI
 
@@ -233,7 +240,7 @@ O GIRUS CLI utiliza um sistema de versionamento dinâmico baseado em git tags. O
 * Para builds locais, você pode compilar com uma versão específica através do seguinte comando:
 
 ```bash
-go build -o girus -ldflags="-X 'github.com/badtuxx/girus-cli/internal/common.Version=0.3.0'" ./main.go
+go build -o girus -ldflags="-X 'github.com/badtuxx/girus-cli/internal/common.Version=0.4.0'" ./main.go
 ```
 
 Para verificar a versão atual do binário, execute:
