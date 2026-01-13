@@ -4,7 +4,7 @@
 
 # GIRUS: Plataforma de Laboratorios Interactivos
 
-Versión 0.4.0 Codename: "Maracatu" - Mayo de 2025
+Versión 0.5.0 Codename: "Maracatu" - Mayo de 2025
 
 ## Visión General
 

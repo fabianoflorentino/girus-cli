@@ -28,7 +28,7 @@ t() {
     fi
 }
 
-echo -e "\n$(t 'Script de Instalação - Versão 0.4.0 - Codename: Maracatu' 'Script de Instalación - Versión 0.4.0 - Codename: Maracatu')\n"
+echo -e "\n$(t 'Script de Instalação - Versão 0.5.0 - Codename: Maracatu' 'Script de Instalación - Versión 0.5.0 - Codename: Maracatu')\n"
 
 # Verificar se o terminal é interativo
 IS_INTERACTIVE=0
@@ -108,7 +108,7 @@ if [ "$ARCH" == "unknown" ]; then
 fi
 
 # Configurações e variáveis
-GIRUS_VERSION="v0.4.0"
+GIRUS_VERSION="v0.5.0"
 
 # Definir URL com base no sistema operacional e arquitetura
 if [ "$OS" == "windows" ]; then

@@ -4,14 +4,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	"k8s.io/utils/ptr"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/utils/ptr"
 
 	"github.com/fatih/color"
 	"github.com/schollz/progressbar/v3"
@@ -547,9 +549,8 @@ func SetupPortForward(namespace string) error {
 	// Verificar conectividade do backend
 	fmt.Println("   Verificando conectividade do backend...")
 	backendOK := false
-	for i := 0; i < 5; i++ {
-		healthCmd := exec.Command("curl", "-s", "--max-time", "2", "http://localhost:8080/api/v1/health")
-		if healthCmd.Run() == nil {
+	for i := 0; i < 15; i++ {
+		if checkURL("http://localhost:8080/api/v1/health") {
 			backendOK = true
 			fmt.Printf("   %s %s conectado com sucesso!\n", green("SUCESSO:"), magenta("Backend"))
 			break
@@ -598,17 +599,11 @@ func SetupPortForward(namespace string) error {
 	// Verificar se o frontend está acessível
 	fmt.Println("   Verificando conectividade do frontend...")
 	frontendOK := false
-	for i := 0; i < 5; i++ {
-		frontendCheckCmd := exec.Command("curl", "-s", "--max-time", "2", "-o", "/dev/null", "-w", "%{http_code}", "http://localhost:8000")
-		var out bytes.Buffer
-		frontendCheckCmd.Stdout = &out
-		if frontendCheckCmd.Run() == nil {
-			statusCode := strings.TrimSpace(out.String())
-			if statusCode == "200" || statusCode == "301" || statusCode == "302" {
-				frontendOK = true
-				fmt.Printf("   %s %s conectado com sucesso!\n", green("SUCESSO:"), magenta("Frontend"))
-				break
-			}
+	for i := 0; i < 15; i++ {
+		if checkURL("http://localhost:8000") {
+			frontendOK = true
+			fmt.Printf("   %s %s conectado com sucesso!\n", green("SUCESSO:"), magenta("Frontend"))
+			break
 		}
 		fmt.Println("   Tentativa", i+1, "falhou, aguardando...")
 		time.Sleep(1 * time.Second)
@@ -619,4 +614,17 @@ func SetupPortForward(namespace string) error {
 	}
 
 	return nil
+}
+
+// checkURL verifica se uma URL está acessível
+func checkURL(url string) bool {
+	client := http.Client{
+		Timeout: 2 * time.Second,
+	}
+	resp, err := client.Get(url)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	return true
 }

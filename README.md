@@ -4,7 +4,7 @@
 
 # GIRUS: Plataforma de Laboratórios Interativos
 
-Versão 0.4.0 Codename: "Maracatu" - Maio de 2025
+Versão 0.5.0 Codename: "Maracatu" - Maio de 2025
 
 ## Visão Geral
 
@@ -240,7 +240,7 @@ O GIRUS CLI utiliza um sistema de versionamento dinâmico baseado em git tags. O
 * Para builds locais, você pode compilar com uma versão específica através do seguinte comando:
 
 ```bash
-go build -o girus -ldflags="-X 'github.com/badtuxx/girus-cli/internal/common.Version=0.4.0'" ./main.go
+go build -o girus -ldflags="-X 'github.com/badtuxx/girus-cli/internal/common.Version=0.5.0'" ./main.go
 ```
 
 Para verificar a versão atual do binário, execute:
